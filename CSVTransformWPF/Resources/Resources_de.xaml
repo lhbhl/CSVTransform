@@ -1,0 +1,29 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Main Window Title -->
+    <system:String x:Key="MainWindowTitle">WPF CSV - Konverter</system:String>
+    <!-- Tooltip for file picker button -->
+    <system:String x:Key="ChooseFilesLabel">CSV - Quelldateien zum Konvertieren auswählen</system:String>
+    <!-- Tooltip for save files button -->
+    <system:String x:Key="SaveFilesLabel">konvertierte CSV - Dateien in einem Ordner abspeichern</system:String>
+    <!-- "File" Menu Name -->
+    <system:String x:Key="FileMenuName">Datei</system:String>
+    <!-- "About" Menu Item Name -->
+    <system:String x:Key="AboutMenuItemName">Über</system:String>
+    <!-- Cogwheel Button tooltip -->
+    <system:String x:Key="CogWheelLabel">Einstellungen</system:String>
+    <!-- Coyp Button tooltip -->
+    <system:String x:Key="CopyButtonLabel">Konvertierten Inhalt der Ausgewählten CSV - Datei in die Zwischenablage Kopieren</system:String>
+    <!-- Start Button tooltip -->
+    <system:String x:Key="StartButtonLabel">Konvertierung starten</system:String>
+    <!-- Stop Button tooltip -->
+    <system:String x:Key="StopButtonLabel">Konvertierung abbrechen</system:String>
+    <!-- Tooltip for the RuleSet DropDown -->
+    <system:String x:Key="RuleSetDropDownToolTip">Verfügbare Regelsätze zur CSV-Konvertierung</system:String>
+    <!-- Label for Rules Dir folder picker -->
+    <system:String x:Key="RulesDirChoiceLabel">Ordner mit Spezifikationsdateien für Regelsätze auswählen</system:String>
+    <!-- Label for display of current rules directory -->
+    <system:String x:Key="CurrentRulesDirLabel">Aktueller Ordner mit Spezifikationsdateien für Regelsätze</system:String>
+</ResourceDictionary>

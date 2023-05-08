@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CsvConverter >
+  <target>
+    <header>
+      <line>MAP: Unkown</line>
+      <line>MODEL: </line>
+      <line>USER: Test   NAME: Caligo   DATE: 06.03.2023 13:00:37</line>
+      <line>-</line>
+      <line>-</line>
+      <line>-</line>
+      <line>-</line>
+      <line>-</line>
+      <line>-</line>
+      <line>-</line>
+    </header>
+    <delimiter>,</delimiter>
+    <decimalseparator>.</decimalseparator>  
+  </target>
+  <source>
+    <delimiter>;</delimiter>
+    <decimalseparator>,</decimalseparator>
+  </source>
+  <rules>
+    <rule>
+      <identifier position="1">CIR</identifier>
+      <formula>
+        <part>[1]</part>
+        <part>Circle_!COUNT</part>
+        <part decimals="4">[2]</part>
+        <part decimals="4">[3]</part>
+        <part decimals="4">[4]</part>
+        <part decimals="6">[5]</part>
+        <part decimals="6">[6]</part>
+        <part decimals="6">[7]</part>
+        <part></part>
+        <part decimals="4">[8]*2</part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part>"Inner"</part>
+        <part></part>
+        <part></part>
+        <part>"0.00"</part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>      
+      </formula>
+    </rule>
+    <rule>
+      <identifier position="1">PLN</identifier>
+      <formula>
+        <part>[1]</part>
+        <part>Plane_!COUNT</part>
+        <part decimals="4">[2]</part>
+        <part decimals="4">[3]</part>
+        <part decimals="4">[4]</part>
+        <part decimals="6">[5]</part>
+        <part decimals="6">[6]</part>
+        <part decimals="6">[7]</part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part>"0.00"</part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+        <part></part>
+      </formula>
+    </rule>
+  </rules>
+</CsvConverter>
