@@ -26,4 +26,8 @@
     <system:String x:Key="RulesDirChoiceLabel">Ordner mit Spezifikationsdateien für Regelsätze auswählen</system:String>
     <!-- Label for display of current rules directory -->
     <system:String x:Key="CurrentRulesDirLabel">Aktueller Ordner mit Spezifikationsdateien für Regelsätze</system:String>
+    
+    <!-- "Edit" Menu name -->
+    <system:String x:Key="EditMenuName">Bearbeiten</system:String>
+    
 </ResourceDictionary>

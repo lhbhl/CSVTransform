@@ -1,7 +1,9 @@
 ﻿using Prism.Commands;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Media.Imaging;
 
@@ -93,10 +95,10 @@ namespace CSVTransformWPF
                 {
                     continue;
                 }
-
-                string[] lines = System.IO.File.ReadAllLines(__fp);
+                
                 try
                 {
+                    string[] lines = System.IO.File.ReadAllLines(__fp);
                     var __returnedLines = __CsvConverter.ConvertCsvFormat(lines);
                     if (__returnedLines == null)
                     {
@@ -108,8 +110,16 @@ namespace CSVTransformWPF
                     {
                         inputFile.State = -1;
                         inputFile.ImageData = new BitmapImage(new Uri("pack://application:,,,/Resources/error.png"));
-                        continue;
                     }
+                    else
+                    {
+                        inputFile.State = 1;
+                        inputFile.ImageData = new BitmapImage(new Uri("pack://application:,,,/Resources/ok.png"));
+                    }
+
+                    // copy all lines from __returnedLines that aren't null into inputFile.ConvertedLines
+                    inputFile.ConvertedLines = __returnedLines.Where(x => x != null).ToArray();
+
                     inputFile.State = 1;
                     inputFile.ImageData = new BitmapImage(new Uri("pack://application:,,,/Resources/ok.png"));
                 }
@@ -123,22 +133,52 @@ namespace CSVTransformWPF
             IsProcessing = false;
         }
 
-        // delegate command to stop conversion
-        public DelegateCommand StopCommand
+        // delegate command to save converted files
+        public DelegateCommand SaveCommand
         {
-            get => _stopCommand ?? new DelegateCommand(StopConversion, () => IsProcessing).ObservesCanExecute(() => IsProcessing);
-            set { _stopCommand = value; }
+            get => _saveCommand ?? new DelegateCommand(SaveFiles, () => ReadyToSave).ObservesCanExecute(() => ReadyToSave);
+            set { _saveCommand = value; }
         }
-        private DelegateCommand? _stopCommand;
+        private DelegateCommand? _saveCommand;
 
-        // actual function to stop conversion
-        void StopConversion()
+        // actual function to save converted files
+        void SaveFiles()
         {
-            ReadyToStart = true;
-            IsProcessing = false;
-            IsIdle = true;
-        }
+            System.Windows.Forms.FolderBrowserDialog __fbd = new();
+            if (__fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                var __SaveDir = __fbd.SelectedPath;
+                if (InputFiles == null) throw new NullReferenceException("Input Files null, this is very wrong!");            
+                // save each file to the folder
+                foreach (var inputFile in InputFiles)
+                {
+                    if (inputFile.ConvertedLines == null)
+                    {
+                        inputFile.ErrorMsg += "Converted lines null, nothing to save!";
+                        continue;
+                    }
 
+                    if (inputFile.Filename == null)
+                    {
+                        inputFile.ErrorMsg += "Filename null, don't know where to save!";
+                        continue;
+                    }
+
+                    var __fp = System.IO.Path.Combine(__fbd.SelectedPath, inputFile.Filename);
+                    try
+                    {
+                        System.IO.File.WriteAllLines(__fp, inputFile.ConvertedLines);
+                    }
+                    catch (Exception e)
+                    {
+                        inputFile.State = -1;
+                        inputFile.ImageData = new BitmapImage(new Uri("pack://application:,,,/Resources/error.png"));
+                        inputFile.ErrorMsg += e.Message;
+                    }
+                }
+            }
+        }
+               
         // delegate command to choose files
         public DelegateCommand ChooseFilesCommand
         {
@@ -292,6 +332,13 @@ namespace CSVTransformWPF
                     ReadyToStart = (InputFiles.Count > 0) && IsIdle;
             }
 
+            // if property name is in conditions for saving, update ReadyToSave
+            if (readyToSaveConditionNames.Contains(propertyName))
+            {
+                if (InputFiles != null)
+                    ReadyToSave = (InputFiles.Any(x => x.ConvertedLines != null && x.ConvertedLines.Length > 0)) && IsIdle;
+            }
+
             if (propertyName == nameof(RulesDir))
             {
                 UpdateRuleSets();
@@ -304,7 +351,9 @@ namespace CSVTransformWPF
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
         private readonly List<string> readyToSTartConditionNames = new() { nameof(IsIdle), nameof(InputFiles) };
+        private readonly List<string> readyToSaveConditionNames = new() { nameof (IsIdle), nameof(InputFiles) };
     }
 
     public class RuleSet : INotifyPropertyChanged
@@ -380,7 +429,7 @@ namespace CSVTransformWPF
                 OnPropertyChanged(nameof(Filepath));
             }
         }
-        private String? _filepath;
+        private string? _filepath;
 
         public int State
         {
@@ -396,7 +445,7 @@ namespace CSVTransformWPF
         }
         private int _state;
 
-        public string ErrorMsg
+        public string? ErrorMsg
         {
             get
             {
@@ -422,6 +471,20 @@ namespace CSVTransformWPF
             }
         }
         private BitmapImage? _image;
+
+        public string[]? ConvertedLines
+        {
+            get
+            {
+                return _convertedLines;
+            }
+            set
+            {
+                _convertedLines = value;
+                OnPropertyChanged(nameof(ConvertedLines));
+            }
+        }
+        private string[]? _convertedLines;
 
         public event PropertyChangedEventHandler? PropertyChanged;
         private void OnPropertyChanged(string propertyName)

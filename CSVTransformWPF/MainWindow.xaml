@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CSVTransformWPF"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="{StaticResource MainWindowTitle}" Height="600" Width="800"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -16,46 +16,41 @@
          FontFamily="{DynamicResource MaterialDesignFont}">
     <DockPanel>
         <Menu IsMainMenu="True" DockPanel.Dock="Top" x:Name="menu" >
-            <MenuItem Header="_File">
-                <MenuItem Header="Save" Icon="{materialDesign:PackIcon Kind=ContentSave}" />
+            <MenuItem Header="{StaticResource FileMenuName}">
+                <MenuItem Header="{StaticResource ChooseFilesLabel}" 
+                          Icon="{materialDesign:PackIcon Kind=FolderOpenOutline}" 
+                          Command="{Binding ChooseFilesCommand}"
+                          InputGestureText="Ctrl+O"/>
 
-                <MenuItem Header="Save As.." />
+                <MenuItem Header="{StaticResource StartButtonLabel}"
+                          Command="{Binding StartCommand}"
+                          Icon="{materialDesign:PackIcon Kind=Play}"/>
 
-                <MenuItem Header="Exit"
-                    Icon="{materialDesign:PackIcon Kind=ExitToApp}"
-                    InputGestureText="Ctrl+E" />
-
-                <Separator />
-
-                <MenuItem Header="Excellent"
-                    IsCheckable="True"
-                    IsChecked="True" />
-
-                <MenuItem Header="Rubbish" IsCheckable="True" />
-
-                <MenuItem Header="Dig Deeper" InputGestureText="Ctrl+D">
-                    <MenuItem Header="Enlightenment?" IsCheckable="True" />
-                    <MenuItem Header="Disappointment" IsCheckable="True" />
-                </MenuItem>
-
-                <MenuItem Header="Look Deeper" InputGestureText="Ctrl+D">
-                    <MenuItem Header="Plain" />
-                    <MenuItem Header="Ice Cream" />
-                </MenuItem>
+                <MenuItem Header="{StaticResource SaveFilesLabel}"
+                          Command="{Binding SaveCommand}"
+                          Icon="{materialDesign:PackIcon Kind=FloppyDiscMultiple}"/>
             </MenuItem>
 
-            <MenuItem Header="_Edit">
-                <MenuItem Command="Cut"
-                    Header="_Cut"
-                    Icon="{materialDesign:PackIcon Kind=ContentCut}" />
+            <MenuItem Header="{StaticResource EditMenuName}">
+                <MenuItem 
+                    Header="{StaticResource RulesDirChoiceLabel}" 
+                    Command="{Binding ChooseRulesDirCommand}"
+                    Icon="{materialDesign:PackIcon Kind=FolderOpen }"/>
 
-                <MenuItem Command="Copy"
-                    Header="_Copy"
-                    Icon="{materialDesign:PackIcon Kind=ContentCopy}" />
 
-                <MenuItem Command="Paste"
-                    Header="_Paste"
-                    Icon="{materialDesign:PackIcon Kind=ContentPaste}" />
+                <MenuItem Header="{StaticResource RuleSetDropDownToolTip}" Icon="{materialDesign:PackIcon Kind=ContentPaste}" >
+                    <ListView
+                        ItemsSource="{Binding RuleSets}"
+                        SelectedItem="{Binding SelectedRuleSet}"
+                        IsEnabled="{Binding IsIdle}"
+                        >
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Filename}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </MenuItem>
             </MenuItem>
         </Menu>
         <ToolBarTray DockPanel.Dock="Top">
@@ -66,9 +61,10 @@
                     ToolTip="{StaticResource ChooseFilesLabel}" />
 
                 <Button 
+                    Command="{Binding SaveCommand}"
                     Content="{materialDesign:PackIcon Kind=FloppyDiscMultiple}" 
                     ToolTip="{StaticResource SaveFilesLabel}"
-                    IsEnabled="{Binding ReadyToSave}"/>
+                    />
 
                 <Separator />
 
@@ -77,22 +73,6 @@
                     Content="{materialDesign:PackIcon Kind=Play}"
                     ToolBar.OverflowMode="AsNeeded"
                     ToolTip="{StaticResource StartButtonLabel}" 
-                    />
-
-                <Button
-                    Command="{Binding StopCommand}"
-                    Content="{materialDesign:PackIcon Kind=Stop}"
-                    ToolBar.OverflowMode="AsNeeded"
-                    ToolTip="{StaticResource StopButtonLabel}"
-                    />
-
-                <Separator />
-
-                <Button 
-                    Command="Cut"
-                    Content="{materialDesign:PackIcon Kind=Cog}"
-                    ToolBar.OverflowMode="AsNeeded"
-                    ToolTip="{StaticResource CogWheelLabel}"
                     />
 
                 <Separator />
@@ -115,24 +95,6 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-
-
-                <ListBox SelectedIndex="0">
-                    <ListBox.ToolTip>
-                        <StackPanel>
-                            <TextBlock Text="MaterialDesignToolToggleFlatListBox" />
-                            <TextBlock Text="Exclusive selection" />
-                            <TextBlock Text="ListBoxAssist.IsToggle allows more natural toggle behaviour" />
-                        </StackPanel>
-                    </ListBox.ToolTip>
-
-                    <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignLeft}" />
-                    <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignCenter}" />
-                    <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignRight}" />
-                    <ListBoxItem Content="{materialDesign:PackIcon Kind=FormatAlignJustify}" />
-                </ListBox>
-
-                
             </ToolBar>
         </ToolBarTray>
         
@@ -143,7 +105,6 @@
                 <TextBlock Text="{Binding RulesDir}" Margin="10,10,10,10" />
             </WrapPanel>
         </materialDesign:Card>
-
         <materialDesign:Card DockPanel.Dock="Top" Margin="10,10,10,10">
             <ListView x:Name="lv_inputFilenames" ItemsSource="{Binding InputFiles}" SelectedItem="{Binding SelectedInputFile}">
                 <ListView.ItemTemplate>
@@ -163,5 +124,4 @@
             </ListView>
         </materialDesign:Card>
     </DockPanel>
-
 </Window>
