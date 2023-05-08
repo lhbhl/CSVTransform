@@ -3,11 +3,10 @@ A small tool for conversion of .csv files between two formats
 
 ## Prerequisites:
 <br/>
-Visual Studio 2022
-.Net Desktop Development Packages
-Windows Forms
-
+Visual Studio 2022, .Net Desktop Development Packages, Windows Forms
+</br></br>
 MaterialDesign in Xaml:
+
 ```
 PM> Install-Package MaterialDesignThemes
 ```
