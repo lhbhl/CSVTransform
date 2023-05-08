@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace CSVTransformWPF.CSVConverter
+namespace CSVTransformWPF.CsvConverter
 {
     [Serializable]
 
@@ -74,7 +74,7 @@ namespace CSVTransformWPF.CSVConverter
         public CsvRule() 
         { 
             Identifier = new RuleIdentifier();
-            Formula = new RulePart[0];
+            Formula = Array.Empty<RulePart>();
         }
         public CsvRule(RuleIdentifier identifier, RulePart[] formula)
         {
@@ -108,32 +108,38 @@ namespace CSVTransformWPF.CSVConverter
                 {"&", (x, y) => x + y}
         };
 
-        // a dictionary of ternary operator strings (for string operands) and their corresponding functions
-        private static readonly Dictionary<string, Func<string, string, string, string>> StrOps3 = new ()
+        // a dictionary of ternary operator strings (for string operands) and their corresponding functions,
+        // this is defined at runtime in the constructor, to avoid too making many of these dictionaries/operation categories of different types
+        private Dictionary<string, Func<string, string, string, string>> StrOps3;
+
+        public string Substring(string input, string from, string to)
         {
-                {"/", (x, y, z) => x.Replace(y,z)},
-                {"$", (x, y, z) => x.Substring(int.Parse(y), int.Parse(z))}
-        };
+            var __from = int.Parse(from, _SourceCultureInfo);
+            var __to = int.Parse(to, _SourceCultureInfo);
+            return input.Substring(__from, __to);
+        }
 
         public static List<string> AllOps
         {
             get
             {
                 // create a list of all unique keys in the dictionaries
-                List<string> allOps = new List<string>(DoubleOps.Keys);
+                List<string> allOps = new(DoubleOps.Keys);
                 allOps.AddRange(StrOps.Keys);
-                allOps.AddRange(StrOps3.Keys);
+                var __ops = new Ops(".",".");
+                allOps.AddRange(__ops.StrOps3.Keys);
                 return allOps.Distinct().ToList();
             }
         }
 
-        private CultureInfo _SourceCultureInfo;
-        private CultureInfo _TargetCultureInfo;
+        private readonly CultureInfo _SourceCultureInfo;
+        private readonly CultureInfo _TargetCultureInfo;
 
         public Ops (CultureInfo sourceCultureInfo, CultureInfo targetCultureInfo)
         {
             _SourceCultureInfo = sourceCultureInfo;
             _TargetCultureInfo = targetCultureInfo;
+            MakeStrops3();
         }
 
         public Ops(string? sourceDecimalSeparator, string? targetDecimalSeparator)
@@ -147,6 +153,17 @@ namespace CSVTransformWPF.CSVConverter
             _TargetCultureInfo = new CultureInfo(CultureInfo.InvariantCulture.Name);
             _TargetCultureInfo.NumberFormat.NumberDecimalSeparator = targetDecimalSeparator;
             _TargetCultureInfo.NumberFormat.NumberGroupSeparator = "";
+            MakeStrops3();
+        }
+
+        private void MakeStrops3()
+        {
+            // defined here because of the use of the _SourceCultureInfo and _TargetCultureInfo fields
+            StrOps3 = new()
+            {
+                    {"/", (x, y, z) => x.Replace(y,z)},
+                    {"$", Substring}
+            };
         }
 
         public string Apply(in string op, in string x, in string y, in int decimals = 3)
@@ -239,35 +256,21 @@ namespace CSVTransformWPF.CSVConverter
         public CsvRule[] Rules { get; set; }
 
         private Ops _Ops;
-        private Dictionary<string, int>? __StringCounts;
+        private Dictionary<string, int> _stringCounts;
 
         public CsvConverter()
         {
             Rules = Array.Empty<CsvRule>();
-           
+            _stringCounts = new Dictionary<string, int>();
             Source = new();
             Target = new();
             _Ops = new(Source.DecimalSeparator, Target.DecimalSeparator);
         }
 
-        // A method that takes a CSV file name and returns an array of strings representing each line
-        private static string[] ReadCsvFile(string fileName)
-        {
-            // Check if the file exists
-            if (!File.Exists(fileName))
-            {
-                throw new FileNotFoundException("The file does not exist.");
-            }
-
-            // Read all the lines from the file and return them as an array
-            return File.ReadAllLines(fileName);
-        }
-
-        public void setCurrentOps(Ops ops)
+        public void SetCurrentOps(Ops ops)
         {
             _Ops = ops;
         }
-
 
         // takes an array of strings representing a CSV file and converts them to another format according to the CsvRules
         public string[] ConvertCsvFormat(string[] lines)
@@ -285,7 +288,7 @@ namespace CSVTransformWPF.CSVConverter
             int offset = Target.Header.Length;
 
             // reset string counts for !COUNT operation
-            __StringCounts = new Dictionary<string, int>();
+            _stringCounts = new Dictionary<string, int>();
 
             // Loop through each line in the original array
             for (int i = 0; i < lines.Length; i++)
@@ -344,16 +347,16 @@ namespace CSVTransformWPF.CSVConverter
             {
                 var __key = formula.Replace("!COUNT", "");
 
-                if (__StringCounts.TryGetValue(__key, out int value))
+                if (_stringCounts.TryGetValue(__key, out int value))
                 {
                     value++;
-                    __StringCounts[__key] = value;
+                    _stringCounts[__key] = value;
                 }
                 else
                 {
-                    __StringCounts[__key] = 1;
+                    _stringCounts[__key] = 1;
                 }
-                formula = formula.Replace("!COUNT", __StringCounts[__key].ToString());
+                formula = formula.Replace("!COUNT", _stringCounts[__key].ToString());
             }
 
             var allOps = Ops.AllOps;
@@ -400,44 +403,6 @@ namespace CSVTransformWPF.CSVConverter
             // Create a new file with the given name and write all the lines to it
             File.WriteAllLines(fileName, lines);
         }
-
-        // take two file names and converts the CSV format from one file to another using the rules from an XML file
-        public static void ConvertCsvFiles(string inputFile, string outputFile, string xmlFile)
-        {
-            // Check if the XML file exists
-            if (!File.Exists(xmlFile))
-            {
-                throw new FileNotFoundException("The XML file does not exist.");
-            }
-
-            // Create an XML serializer for the CsvConverter class
-            XmlSerializer serializer = new(typeof(CsvConverter));
-
-            // Read the XML file and deserialize it into a CsvConverter object
-            CsvConverter? converter = null;
-            using (StreamReader reader = new(xmlFile))
-            {
-                var obj = serializer.Deserialize(reader) ?? throw new XmlException("The XML file is empty / defective ");
-                // check if the deserialized object is of type CsvConverter
-                if (obj is CsvConverter converter1)
-                {
-                    converter = converter1;
-                }
-                else
-                {
-                    throw new XmlException("The XML file does not contain a CsvConverter object.");
-                }
-            }
-
-            // Read the input file and store the lines in an array
-            string[] inputLines = ReadCsvFile(inputFile);
-
-            // Convert the CSV format of the input lines using the converter object and store them in another array
-            string[] outputLines = converter.ConvertCsvFormat(inputLines);
-
-            // Write the output lines to the output file
-            WriteCsvFile(outputLines, outputFile);
-        }
     }
 
     public class CsvConverterFactory { 
@@ -465,7 +430,7 @@ namespace CSVTransformWPF.CSVConverter
                     throw new XmlException("The XML file does not contain a CsvConverter object.");
                 }
             }
-            converter.setCurrentOps(new(converter.Source.DecimalSeparator, converter.Target.DecimalSeparator));
+            converter.SetCurrentOps(new(converter.Source.DecimalSeparator, converter.Target.DecimalSeparator));
             return converter;
         }
     }

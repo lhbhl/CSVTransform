@@ -25,7 +25,7 @@ namespace CSVTransformWPF
 
             _readyToSave = false;
             _readyToStart = false;
-            _IsProcessing = false;
+            _isProcessing = false;
             RulesDir = System.IO.Path.GetFullPath("Rules");
         }
 
@@ -80,7 +80,7 @@ namespace CSVTransformWPF
                 return;
             }
 
-            var __CsvConverter = CSVConverter.CsvConverterFactory.FromXml(SelectedRuleSet.Filepath);
+            var __csvConverter = CsvConverter.CsvConverterFactory.FromXml(SelectedRuleSet.Filepath);
 
             foreach (var inputFile in InputFiles)
             {
@@ -99,7 +99,7 @@ namespace CSVTransformWPF
                 try
                 {
                     string[] lines = System.IO.File.ReadAllLines(__fp);
-                    var __returnedLines = __CsvConverter.ConvertCsvFormat(lines);
+                    var __returnedLines = __csvConverter.ConvertCsvFormat(lines);
                     if (__returnedLines == null)
                     {
                         inputFile.State = -1;
@@ -147,8 +147,9 @@ namespace CSVTransformWPF
             System.Windows.Forms.FolderBrowserDialog __fbd = new();
             if (__fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                var __SaveDir = __fbd.SelectedPath;
+                var __saveDir = __fbd.SelectedPath;
                 if (InputFiles == null) throw new NullReferenceException("Input Files null, this is very wrong!");            
+                if (!System.IO.Directory.Exists(__saveDir)) throw new System.IO.DirectoryNotFoundException("Save directory does not exist!");
                 // save each file to the folder
                 foreach (var inputFile in InputFiles)
                 {
@@ -164,7 +165,7 @@ namespace CSVTransformWPF
                         continue;
                     }
 
-                    var __fp = System.IO.Path.Combine(__fbd.SelectedPath, inputFile.Filename);
+                    var __fp = System.IO.Path.Combine(__saveDir, inputFile.Filename);
                     try
                     {
                         System.IO.File.WriteAllLines(__fp, inputFile.ConvertedLines);
@@ -270,7 +271,7 @@ namespace CSVTransformWPF
 
         public bool IsIdle
         {
-            get { return !_IsProcessing; }
+            get { return !_isProcessing; }
             set
             {
                 IsProcessing = !value;
@@ -302,15 +303,15 @@ namespace CSVTransformWPF
 
         public bool IsProcessing
         {
-            get { return _IsProcessing; }
+            get { return _isProcessing; }
             set
             {
-                _IsProcessing = value;
+                _isProcessing = value;
                 OnPropertyChanged(nameof(IsProcessing));
                 OnPropertyChanged(nameof(IsIdle));
             }
         }
-        private bool _IsProcessing;
+        private bool _isProcessing;
 
         public IList<InputFile>? InputFiles
         {
