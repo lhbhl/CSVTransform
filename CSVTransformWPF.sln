@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSVTransformWPF", "CSVTransformWPF\CSVTransformWPF.csproj", "{4DD2EA4F-4F74-418E-A2B5-C0AC2B9362A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSVConverterTest", "CSVConverterTest\CSVConverterTest.csproj", "{FB2AC839-0F35-480F-A21D-1B097C6C521B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSVTransformTest", "CSVConverterTest\CSVTransformTest.csproj", "{FB2AC839-0F35-480F-A21D-1B097C6C521B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
