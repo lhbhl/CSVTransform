@@ -4,6 +4,8 @@ A small tool for conversion of .csv files between two formats
 ## Prerequisites:
 <br/>
 Visual Studio 2022
+.Net Desktop Development Packages
+Windows Forms
 
 MaterialDesign in Xaml:
 ```
