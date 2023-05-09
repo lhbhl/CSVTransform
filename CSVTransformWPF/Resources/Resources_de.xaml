@@ -29,5 +29,20 @@
     
     <!-- "Edit" Menu name -->
     <system:String x:Key="EditMenuName">Bearbeiten</system:String>
-    
+
+    <!-- OpenAI Menu Item name -->
+    <system:String x:Key="OpenOpenAIDialogToolTip">OpenAI - API nutzen, um Regelsatz für neue .csv - Konversion zu erstellen</system:String>
+
+
+    <!-- Label for Button to get .xml file from OpenAI API -->
+    <system:String x:Key="GPTGetAnswerButtonLabel">Go</system:String>
+    <!-- Label for textbox to enter openai api key -->
+    <system:String x:Key="ApiKeyTextBoxLabel">API Key:</system:String>
+    <!-- Label for textbox to enter Example Source .csv content -->
+    <system:String x:Key="ExampleInputLabel">Beispiel CSV Inhalt Quellformat:</system:String>
+    <!-- Label for textbox to enter Example Target .csv content -->
+    <system:String x:Key="ExampleOutputLabel">Beispiel CSV Inhalt Zielformat:</system:String>
+    <!-- Label for openAI output -->
+    <system:String x:Key="OpenAIOutputLabel">OpenAI Antwort:</system:String>
+
 </ResourceDictionary>

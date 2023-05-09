@@ -51,6 +51,8 @@
                         </ListView.ItemTemplate>
                     </ListView>
                 </MenuItem>
+
+                <MenuItem Header="{StaticResource OpenOpenAIDialogToolTip}" Icon="{materialDesign:PackIcon Kind=Cog}" Command="{Binding OpenOpenAIDialogCommand}"/>
             </MenuItem>
         </Menu>
         <ToolBarTray DockPanel.Dock="Top">

@@ -62,6 +62,23 @@ namespace CSVTransformWPF
         }
         private RuleSet? _selectedRuleSet;
 
+        // delegate command to open openai dialog
+        public DelegateCommand OpenOpenAIDialogCommand
+        {
+            get => _openOpenAIDialogCommand ?? new DelegateCommand(OpenOpenAIDialog, () => IsIdle).ObservesCanExecute(() => IsIdle);
+            set { _openOpenAIDialogCommand = value; }
+        }
+        private DelegateCommand? _openOpenAIDialogCommand;
+
+        // actual function to open openai dialog
+        void OpenOpenAIDialog()
+        {
+            var __openAIDialog = new OpenAIDialog();
+            var __vm = new OpenAIDialogViewModel();
+            __openAIDialog.DataContext = __vm;
+            __openAIDialog.ShowDialog();
+        }
+
         // delegate command to start conversion
         public DelegateCommand StartCommand
         {
