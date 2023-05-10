@@ -97,7 +97,7 @@ namespace CSVTransformWPF
                 return;
             }
 
-            var __csvConverter = CsvConverter.CsvConverterFactory.FromXml(SelectedRuleSet.Filepath);
+            CsvConverter.CsvConverter __csvConverter = new(SelectedRuleSet.Filepath);
 
             foreach (var inputFile in InputFiles)
             {

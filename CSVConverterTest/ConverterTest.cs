@@ -13,7 +13,7 @@ namespace CSVConverterTest
         {
 
             // Arrange
-            var converter = CSVTransformWPF.CsvConverter.CsvConverterFactory.FromXml("TestData\\toEAT40.xml");
+            CSVTransformWPF.CsvConverter.CsvConverter converter = new("TestData\\toEAT40.xml");
             // read source file to string array
             var input = File.ReadAllLines("TestData\\TestSource.csv");
             // strip newline characters
@@ -38,11 +38,11 @@ namespace CSVConverterTest
         public void SourceFileFormatExceptionTest()
         {
             // Arrange
-            var converter = CSVTransformWPF.CsvConverter.CsvConverterFactory.FromXml(@"C:\Users\icke\working_dir\23_ZEISS_recruitment\repo\CSVTransformWPF\CSVTransformWPF\Rules\toEAT40.xml");
+            CSVTransformWPF.CsvConverter.CsvConverter converter = new("TestData\\toEAT40.xml");
             var input = new string[] { "CIR;1000,00;500,00;100,00;1,00;0,00;0,00\r\n"};
             
             // Act
-            var actual = converter.ConvertCsvFormat(input);
+            var _ = converter.ConvertCsvFormat(input);
         }
 
         [TestMethod]
@@ -50,11 +50,11 @@ namespace CSVConverterTest
         public void ArgumentExceptionTest()
         {
             // Arrange
-            var converter = CSVTransformWPF.CsvConverter.CsvConverterFactory.FromXml(@"C:\Users\icke\working_dir\23_ZEISS_recruitment\repo\CSVTransformWPF\CSVTransformWPF\Rules\toEAT40.xml");
+            CSVTransformWPF.CsvConverter.CsvConverter converter = new("TestData\\toEAT40.xml");
             var input = new string[] { "CIR;1000,00;500,00;100,00;1,00;0,00;0,00;BAD\r\n" };
 
             // Act
-            var actual = converter.ConvertCsvFormat(input);
+            var _ = converter.ConvertCsvFormat(input);
         }
 
         [TestMethod]
@@ -62,10 +62,10 @@ namespace CSVConverterTest
         public void SourceFileFormatExceptionTest2()
         {
             // Arrange
-            var converter = CSVTransformWPF.CsvConverter.CsvConverterFactory.FromXml(@"C:\Users\icke\working_dir\23_ZEISS_recruitment\repo\CSVTransformWPF\CSVTransformWPF\Rules\toEAT40.xml");
+            CSVTransformWPF.CsvConverter.CsvConverter converter = new("TestData\\toEAT40.xml");
             var input = new string[] { "BAD;1000,00;500,00;100,00;1,00;0,00;0,00;BAD\r\n" };
             // Act
-            var actual = converter.ConvertCsvFormat(input);
+            var _ = converter.ConvertCsvFormat(input);
         }
     }
 
