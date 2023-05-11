@@ -44,5 +44,28 @@
     <system:String x:Key="ExampleOutputLabel">Beispiel CSV Inhalt Zielformat:</system:String>
     <!-- Label for openAI output -->
     <system:String x:Key="OpenAIOutputLabel">OpenAI Antwort:</system:String>
+    
+    <!-- Msgbox on close window -->
+    <system:String x:Key="UnsavedFilesMsgBoxExplanation">Sie haben ungespeicherte Konvertierungen, diese jetzt speichern?</system:String>
+    <system:String x:Key="SaveFilesQuery">Jetzt Speichern?</system:String>
+    
+    <!-- Msgbox on file exists -->
+    <system:String x:Key="FileExistsExplanation">Die Datei existiert bereits, soll sie überschrieben werden?</system:String>
+    <system:String x:Key="FileExistsHeader">Überschreiben?</system:String>
+    
+    <!-- Error strings -->
+    <system:String x:Key="SaveDirDoesntExistError">Fehler: Ausgabeverzeichnis existiert nicht</system:String>
+    <system:String x:Key="NoConvertedLinesOnSaveError">Fehler: Keine Konvertierten Zeilen vorhanden</system:String>
+    <system:String x:Key="NoOutputFilenameError">Fehler: Kein Ausgabedateiname vorhanden</system:String>
+    <system:String x:Key="NoLinesConvertedError">Fehler: Nichts konvertiert</system:String>
+    <system:String x:Key="SomeLinesNotConvertedError">Fehler: Einige Zeilen konnten nicht konvertiert werden</system:String>
+
+
+    <!-- Language specific settings Strings for Converter -->
+    <system:String x:Key="LanguageLabel">Sprache:</system:String>
+    <system:String x:Key="human_readable_language_en-US">Englisch</system:String>
+    <system:String x:Key="human_readable_language_de-DE">Deutsch</system:String>
+    <system:String x:Key="universal_language_identifier_Englisch">en-US</system:String>
+    <system:String x:Key="universal_language_identifier_Deutsch">de-DE</system:String>
 
 </ResourceDictionary>

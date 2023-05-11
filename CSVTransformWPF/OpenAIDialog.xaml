@@ -29,9 +29,9 @@
 
         <materialDesign:Card  VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="0" Margin="5,5,5,5">
             <DockPanel>
-                <Label DockPanel.Dock="Top" Content="{StaticResource ApiKeyTextBoxLabel}" />
+                <Label DockPanel.Dock="Top" Content="{DynamicResource ApiKeyTextBoxLabel}" />
                 <TextBox DockPanel.Dock="Top" Text="{Binding ApiKey}" x:Name="ApiKeyTextBox"/>
-                <Button DockPanel.Dock="Top" HorizontalAlignment="Left" x:Name="GetAnswerButton" Command="{Binding GetAnswerCommand}" Content="{StaticResource GPTGetAnswerButtonLabel}" Width="50" />
+                <Button DockPanel.Dock="Top" HorizontalAlignment="Left" x:Name="GetAnswerButton" Command="{Binding GetAnswerCommand}" Content="{DynamicResource GPTGetAnswerButtonLabel}" Width="50" />
             </DockPanel>
         </materialDesign:Card>
 
@@ -39,7 +39,7 @@
 
         <materialDesign:Card  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1"  Margin="5,5,5,5">
             <DockPanel>
-                <Label DockPanel.Dock="Top" Content="{StaticResource ExampleInputLabel}" />
+                <Label DockPanel.Dock="Top" Content="{DynamicResource ExampleInputLabel}" />
                 <TextBox DockPanel.Dock="Top" x:Name="ExampleInputTextbox" Text="{Binding ExampleSourceText}" TextWrapping="Wrap" VerticalContentAlignment="Top" />
             </DockPanel>
         </materialDesign:Card>
@@ -56,14 +56,14 @@
         
         <materialDesign:Card VerticalAlignment="Stretch" Grid.Row="0" HorizontalAlignment="Stretch" Grid.Column="3"  Margin="5,5,5,5">
             <DockPanel>
-                <Label DockPanel.Dock="Top" Content="{StaticResource ExampleOutputLabel}" />
+                <Label DockPanel.Dock="Top" Content="{DynamicResource ExampleOutputLabel}" />
                 <TextBox DockPanel.Dock="Top" x:Name="ExampleOutputTextbox" Text="{Binding ExampleTargetText}" TextWrapping="Wrap" VerticalContentAlignment="Top" />
             </DockPanel>
         </materialDesign:Card>
 
         <materialDesign:Card VerticalAlignment="Stretch" Grid.Row="1" HorizontalAlignment="Stretch" Grid.Column="0" Grid.ColumnSpan="4" Margin="5,5,5,5">
             <DockPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                <Label DockPanel.Dock="Top" Content="{StaticResource OpenAIOutputLabel}" />
+                <Label DockPanel.Dock="Top" Content="{DynamicResource OpenAIOutputLabel}" />
                 <TextBox x:Name="AIAnswerTextBox" Text="{Binding Response.Completion}" TextWrapping="Wrap" VerticalAlignment="Stretch" VerticalContentAlignment="Top" IsReadOnly="True" />
             </DockPanel>
         </materialDesign:Card>

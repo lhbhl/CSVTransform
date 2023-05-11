@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace CSVTransformWPF
@@ -13,22 +14,34 @@ namespace CSVTransformWPF
     {
         private IList<InputFile>? _inputFiles;
         private IList<RuleSet>? _ruleSets;
+        private Application _currentApplication;
+        public string[] AvailableLanguages { get; } = { "de-DE", "en-US" };
+        
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(UserSettings settings, Application currentApplication)
         {
-            /*_inputFiles = new List<InputFile>
-            {
-                new InputFile { Filename = "filename1.csv", Filepath = "C:\\Users\\user\\Documents\\filename1.csv", State = 0, ImageData = null },
-                new InputFile { Filename = "filename2.csv", Filepath = "C:\\Users\\user\\Documents\\filename2.csv", State = -1, ImageData = new BitmapImage(new Uri("pack://application:,,,/Resources/error.png")) },
-                new InputFile { Filename = "filename3.csv", Filepath = "C:\\Users\\user\\Documents\\filename3.csv", State = 1, ImageData = new BitmapImage(new Uri("pack://application:,,,/Resources/ok.png")) },
-            };*/
-
             _readyToSave = false;
             _readyToStart = false;
             _isProcessing = false;
-            RulesDir = System.IO.Path.GetFullPath("Rules");
+            _settings = settings;
+            _settings.PropertyChanged += OnSettingsPropertyChanged;
+            _currentApplication = currentApplication;
+            // 
+            UpdateRuleSets();
         }
 
+        public UserSettings Settings 
+        {
+            get => _settings;
+            set
+            {
+                _settings = value;
+                OnPropertyChanged(nameof(Settings));
+            }
+        }
+        private UserSettings _settings;
+
+        
         // look in Rules folder for rules files
         public IList<RuleSet> RuleSets
         {
@@ -117,17 +130,22 @@ namespace CSVTransformWPF
                 {
                     string[] lines = System.IO.File.ReadAllLines(__fp);
                     var __returnedLines = __csvConverter.ConvertCsvFormat(lines);
+                    // conversion went very wrong, nothing returned
                     if (__returnedLines == null)
                     {
                         inputFile.State = -1;
                         inputFile.ImageData = new BitmapImage(new Uri("pack://application:,,,/Resources/error.png"));
+                        inputFile.ErrorMsg += _currentApplication.TryFindResource("NoLinesConvertedError").ToString();
                         continue;
                     }
+                    // conversion went wrong, but some lines were returned
                     else if (!__returnedLines.All(x => x != null))
                     {
-                        inputFile.State = -1;
+                        inputFile.State = 1;
                         inputFile.ImageData = new BitmapImage(new Uri("pack://application:,,,/Resources/error.png"));
+                        inputFile.ErrorMsg += _currentApplication.TryFindResource("SomeLinesNotConvertedError").ToString();
                     }
+                    // conversion went well
                     else
                     {
                         inputFile.State = 1;
@@ -136,15 +154,12 @@ namespace CSVTransformWPF
 
                     // copy all lines from __returnedLines that aren't null into inputFile.ConvertedLines
                     inputFile.ConvertedLines = __returnedLines.Where(x => x != null).ToArray();
-
-                    inputFile.State = 1;
-                    inputFile.ImageData = new BitmapImage(new Uri("pack://application:,,,/Resources/ok.png"));
                 }
                 catch (Exception e)
                 {
                     inputFile.State = -1;
                     inputFile.ImageData = new BitmapImage(new Uri("pack://application:,,,/Resources/error.png"));
-                    inputFile.ErrorMsg = e.Message;
+                    inputFile.ErrorMsg += e.Message;
                 }
             }
             IsProcessing = false;
@@ -165,34 +180,47 @@ namespace CSVTransformWPF
             if (__fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 var __saveDir = __fbd.SelectedPath;
-                if (InputFiles == null) throw new NullReferenceException("Input Files null, this is very wrong!");            
-                if (!System.IO.Directory.Exists(__saveDir)) throw new System.IO.DirectoryNotFoundException("Save directory does not exist!");
+                if (InputFiles == null) throw new NullReferenceException("");            
+                if (!System.IO.Directory.Exists(__saveDir)) throw new System.IO.DirectoryNotFoundException(_currentApplication.TryFindResource("SaveDirDoesntExistError").ToString());
                 // save each file to the folder
                 foreach (var inputFile in InputFiles)
                 {
                     if (inputFile.ConvertedLines == null)
                     {
-                        inputFile.ErrorMsg += "Converted lines null, nothing to save!";
+                        inputFile.ErrorMsg += _currentApplication.TryFindResource("NoConvertedLinesOnSaveError");
                         continue;
                     }
 
                     if (inputFile.Filename == null)
                     {
-                        inputFile.ErrorMsg += "Filename null, don't know where to save!";
+                        inputFile.ErrorMsg += _currentApplication.TryFindResource("NoOutputFilenameError");
                         continue;
                     }
 
                     var __fp = System.IO.Path.Combine(__saveDir, inputFile.Filename);
+                    // if file exists, ask User if they want to overwrite
+                    if (System.IO.File.Exists(__fp))
+                    {
+                        var __result = System.Windows.MessageBox.Show($"{__fp}: {_currentApplication.TryFindResource("FileExistsExplanation").ToString()}", 
+                            _currentApplication.TryFindResource("FileExistsHeader").ToString(), System.Windows.MessageBoxButton.YesNo);
+                        if (__result == System.Windows.MessageBoxResult.No)
+                        {
+                            continue;
+                        }
+                    }
                     try
                     {
                         System.IO.File.WriteAllLines(__fp, inputFile.ConvertedLines);
                     }
+
                     catch (Exception e)
                     {
                         inputFile.State = -1;
                         inputFile.ImageData = new BitmapImage(new Uri("pack://application:,,,/Resources/error.png"));
                         inputFile.ErrorMsg += e.Message;
                     }
+
+                    inputFile.State = 0;
                 }
             }
         }
@@ -241,16 +269,16 @@ namespace CSVTransformWPF
             System.Windows.Forms.FolderBrowserDialog fbd = new();
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                RulesDir = fbd.SelectedPath;
+                Settings.LastRuleFolderPath = fbd.SelectedPath;
             }
         }
 
-        void UpdateRuleSets()
+        private void UpdateRuleSets()
         {
             // check if directory contains rules files
-            if (RulesDir == null || !System.IO.Directory.Exists(RulesDir)) return;
+            if (Settings.LastRuleFolderPath == null || !System.IO.Directory.Exists(Settings.LastRuleFolderPath)) return;
 
-            var __rulesFiles = System.IO.Directory.GetFiles(RulesDir, "*.xml");
+            var __rulesFiles = System.IO.Directory.GetFiles(Settings.LastRuleFolderPath, "*.xml");
             if (__rulesFiles.Length > 0)
             {
                 var __ruleSets = new List<RuleSet>();
@@ -263,17 +291,23 @@ namespace CSVTransformWPF
             }
         }
 
-        public string? RulesDir
+        public void WindowClosing(object? sender, CancelEventArgs e)
         {
-            get { return _rulesDir; }
-            set
+            // if we have files that have been converted but not saved, ask the user if they want to save them
+            if (InputFiles != null && InputFiles.Any(x => x.State == 1))
             {
-                _rulesDir = value;
-                OnPropertyChanged(nameof(RulesDir));
+                var __result = System.Windows.MessageBox.Show(_currentApplication.TryFindResource("UnsavedFilesMsgBoxExplanation").ToString(),
+                                                             _currentApplication.TryFindResource("SaveFilesQuery").ToString(), System.Windows.MessageBoxButton.YesNoCancel);
+                if (__result == System.Windows.MessageBoxResult.Yes)
+                {
+                    SaveFiles();
+                }
+                else if (__result == System.Windows.MessageBoxResult.Cancel)
+                {
+                    return;
+                }
             }
         }
-        private string? _rulesDir;
-
 
         public InputFile? SelectedInputFile
         {
@@ -357,11 +391,6 @@ namespace CSVTransformWPF
                     ReadyToSave = (InputFiles.Any(x => x.ConvertedLines != null && x.ConvertedLines.Length > 0)) && IsIdle;
             }
 
-            if (propertyName == nameof(RulesDir))
-            {
-                UpdateRuleSets();
-            }
-
             if (propertyName == nameof(RuleSets))
             {
                 SelectedRuleSet = RuleSets[0];
@@ -372,6 +401,14 @@ namespace CSVTransformWPF
 
         private readonly List<string> readyToSTartConditionNames = new() { nameof(IsIdle), nameof(InputFiles) };
         private readonly List<string> readyToSaveConditionNames = new() { nameof (IsIdle), nameof(InputFiles) };
+
+        private void OnSettingsPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Settings.LastRuleFolderPath))
+            {
+                UpdateRuleSets();
+            }
+        }
     }
 
     public class RuleSet : INotifyPropertyChanged

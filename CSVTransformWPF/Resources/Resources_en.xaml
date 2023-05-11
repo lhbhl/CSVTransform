@@ -1,0 +1,72 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Main Window Title -->
+    <system:String x:Key="MainWindowTitle">WPF CSV - Converter</system:String>
+    <!-- Tooltip for file picker button -->
+    <system:String x:Key="ChooseFilesLabel">choose .csv - files for conversion</system:String>
+    
+    <!-- Tooltip for save files button -->
+    <system:String x:Key="SaveFilesLabel">save converted .csv files to target folder</system:String>
+    <!-- "File" Menu Name -->
+    <system:String x:Key="FileMenuName">File</system:String>
+    <!-- "About" Menu Item Name -->
+    <system:String x:Key="AboutMenuItemName">About</system:String>
+    <!-- Cogwheel Button tooltip -->
+    <system:String x:Key="CogWheelLabel">Settings</system:String>
+    <!-- Coyp Button tooltip -->
+    <system:String x:Key="CopyButtonLabel">copy converted content to clipboard</system:String>
+    <!-- Start Button tooltip -->
+    <system:String x:Key="StartButtonLabel">start conversion</system:String>
+    <!-- Stop Button tooltip -->
+    <system:String x:Key="StopButtonLabel">abort conversion</system:String>
+    <!-- Tooltip for the RuleSet DropDown -->
+    <system:String x:Key="RuleSetDropDownToolTip">available rule sets for conversion</system:String>
+    <!-- Label for Rules Dir folder picker -->
+    <system:String x:Key="RulesDirChoiceLabel">choose folder with .xml files containing conversion rule sets</system:String>
+    <!-- Label for display of current rules directory -->
+    <system:String x:Key="CurrentRulesDirLabel">current folder containing conversion rule sets</system:String>
+    
+    <!-- "Edit" Menu name -->
+    <system:String x:Key="EditMenuName">Edit</system:String>
+
+    <!-- OpenAI Menu Item name -->
+    <system:String x:Key="OpenOpenAIDialogToolTip">use OpenAI API to create new conversion rule sets</system:String>
+
+
+    <!-- Label for Button to get .xml file from OpenAI API -->
+    <system:String x:Key="GPTGetAnswerButtonLabel">Go</system:String>
+    <!-- Label for textbox to enter openai api key -->
+    <system:String x:Key="ApiKeyTextBoxLabel">API Key:</system:String>
+    <!-- Label for textbox to enter Example Source .csv content -->
+    <system:String x:Key="ExampleInputLabel">example .csv content of source format:</system:String>
+    <!-- Label for textbox to enter Example Target .csv content -->
+    <system:String x:Key="ExampleOutputLabel">example .csv content of target format:</system:String>
+    <!-- Label for openAI output -->
+    <system:String x:Key="OpenAIOutputLabel">OpenAI answer:</system:String>
+
+    <!-- Msgbox on close window -->
+    <system:String x:Key="UnsavedFilesMsgBoxExplanation">There are unsaved conversion results, save them now?</system:String>
+    <system:String x:Key="SaveFilesQuery">Save now?</system:String>
+
+    <!-- Msgbox on file exists -->
+    <system:String x:Key="FileExistsExplanation">File already exists, overwrite?</system:String>
+    <system:String x:Key="FileExistsHeader">Overwrite?</system:String>
+
+    <!-- Error strings -->
+    <system:String x:Key="SaveDirDoesntExistError">Error: output directory doesn't exist</system:String>
+    <system:String x:Key="NoConvertedLinesOnSaveError">Error: no converted lines available</system:String>
+    <system:String x:Key="NoOutputFilenameError">Error: No output filename</system:String>
+    <system:String x:Key="NoLinesConvertedError">Error: nothing converted</system:String>
+    <system:String x:Key="SomeLinesNotConvertedError">Error: some lines couldn't be converted</system:String>
+
+
+    <!-- Language specific settings Strings for Converter -->
+    <system:String x:Key="LanguageLabel">language:</system:String>
+    <system:String x:Key="human_readable_language_en-US">english</system:String>
+    <system:String x:Key="human_readable_language_de-DE">german</system:String>
+    <system:String x:Key="universal_language_identifier_english">en-US</system:String>
+    <system:String x:Key="universal_language_identifier_german">de-DE</system:String>
+
+</ResourceDictionary>

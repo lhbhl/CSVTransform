@@ -259,29 +259,7 @@ namespace CSVTransformWPF.CsvConverter
 
         public static CsvConverterSpec FromXml(string csvConverterSpecFile)
         {
-            // Check if the XML file exists
-            if (!File.Exists(csvConverterSpecFile))
-            {
-                throw new FileNotFoundException($"The XML file {csvConverterSpecFile} does not exist.");
-            }
-            // Create an XML serializer for the CsvConverter class
-            XmlSerializer serializer = new(typeof(CsvConverterSpec));
-            // Read the XML file and deserialize it into a CsvConverter object
-            CsvConverterSpec? converterSpec;
-            using (StreamReader reader = new(csvConverterSpecFile))
-            {
-                var obj = serializer.Deserialize(reader) ?? throw new XmlException("The XML file is empty / defective ");
-                // check if the deserialized object is of type CsvConverter
-                if (obj is CsvConverterSpec converterSpec1)
-                {
-                    converterSpec = converterSpec1;
-                }
-                else
-                {
-                    throw new XmlException("The XML file does not contain a CsvConverter object.");
-                }
-            }
-            return converterSpec;
+            return new De_Serializer<CsvConverterSpec>().FromXml(csvConverterSpecFile);
         }
     }
 

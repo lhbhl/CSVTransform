@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CSVTransformWPF"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="{StaticResource MainWindowTitle}" Height="600" Width="800"
+        Title="{DynamicResource MainWindowTitle}" Height="600" Width="800"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
          TextElement.FontWeight="Regular"
          TextElement.FontSize="13"
@@ -14,31 +14,34 @@
          TextOptions.TextRenderingMode="Auto"
          Background="{DynamicResource MaterialDesignPaper}"
          FontFamily="{DynamicResource MaterialDesignFont}">
+    <Window.Resources>
+        <local:LanguageConverter x:Key="LanguageConverter" />
+    </Window.Resources>
     <DockPanel>
         <Menu IsMainMenu="True" DockPanel.Dock="Top" x:Name="menu" >
-            <MenuItem Header="{StaticResource FileMenuName}">
-                <MenuItem Header="{StaticResource ChooseFilesLabel}" 
+            <MenuItem Header="{DynamicResource FileMenuName}">
+                <MenuItem Header="{DynamicResource ChooseFilesLabel}" 
                           Icon="{materialDesign:PackIcon Kind=FolderOpenOutline}" 
                           Command="{Binding ChooseFilesCommand}"
                           InputGestureText="Ctrl+O"/>
 
-                <MenuItem Header="{StaticResource StartButtonLabel}"
+                <MenuItem Header="{DynamicResource StartButtonLabel}"
                           Command="{Binding StartCommand}"
                           Icon="{materialDesign:PackIcon Kind=Play}"/>
 
-                <MenuItem Header="{StaticResource SaveFilesLabel}"
+                <MenuItem Header="{DynamicResource SaveFilesLabel}"
                           Command="{Binding SaveCommand}"
                           Icon="{materialDesign:PackIcon Kind=FloppyDiscMultiple}"/>
             </MenuItem>
 
-            <MenuItem Header="{StaticResource EditMenuName}">
+            <MenuItem Header="{DynamicResource EditMenuName}">
                 <MenuItem 
-                    Header="{StaticResource RulesDirChoiceLabel}" 
+                    Header="{DynamicResource RulesDirChoiceLabel}" 
                     Command="{Binding ChooseRulesDirCommand}"
                     Icon="{materialDesign:PackIcon Kind=FolderOpen }"/>
 
 
-                <MenuItem Header="{StaticResource RuleSetDropDownToolTip}" Icon="{materialDesign:PackIcon Kind=ContentPaste}" >
+                <MenuItem Header="{DynamicResource RuleSetDropDownToolTip}" Icon="{materialDesign:PackIcon Kind=ContentPaste}" >
                     <ListView
                         ItemsSource="{Binding RuleSets}"
                         SelectedItem="{Binding SelectedRuleSet}"
@@ -52,20 +55,29 @@
                     </ListView>
                 </MenuItem>
 
-                <MenuItem Header="{StaticResource OpenOpenAIDialogToolTip}" Icon="{materialDesign:PackIcon Kind=Cog}" Command="{Binding OpenOpenAIDialogCommand}"/>
+                <MenuItem Header="{DynamicResource LanguageLabel}" Icon="{materialDesign:PackIcon Kind=ContentPaste}" >
+                    <ComboBox
+                        ItemsSource="{Binding AvailableLanguages, Converter={StaticResource LanguageConverter}}"
+                        SelectedItem="{Binding Settings.Language, Converter={StaticResource LanguageConverter}}"
+                        IsEnabled="{Binding IsIdle}"
+                        >
+                    </ComboBox>
+                </MenuItem>
+
+                <MenuItem Header="{DynamicResource OpenOpenAIDialogToolTip}" Icon="{materialDesign:PackIcon Kind=Cog}" Command="{Binding OpenOpenAIDialogCommand}"/>
             </MenuItem>
         </Menu>
         <ToolBarTray DockPanel.Dock="Top">
-            <ToolBar ClipToBounds="False" Style="{StaticResource MaterialDesignToolBar}">
+            <ToolBar ClipToBounds="False" Style="{DynamicResource MaterialDesignToolBar}">
                 <Button
                     Command="{Binding ChooseFilesCommand}"
                     Content="{materialDesign:PackIcon Kind=FolderOpenOutline }"
-                    ToolTip="{StaticResource ChooseFilesLabel}" />
+                    ToolTip="{DynamicResource ChooseFilesLabel}" />
 
                 <Button 
                     Command="{Binding SaveCommand}"
                     Content="{materialDesign:PackIcon Kind=FloppyDiscMultiple}" 
-                    ToolTip="{StaticResource SaveFilesLabel}"
+                    ToolTip="{DynamicResource SaveFilesLabel}"
                     />
 
                 <Separator />
@@ -74,7 +86,7 @@
                     Command="{Binding StartCommand}"
                     Content="{materialDesign:PackIcon Kind=Play}"
                     ToolBar.OverflowMode="AsNeeded"
-                    ToolTip="{StaticResource StartButtonLabel}" 
+                    ToolTip="{DynamicResource StartButtonLabel}" 
                     />
 
                 <Separator />
@@ -82,13 +94,13 @@
                 <Button
                     Command="{Binding ChooseRulesDirCommand}"
                     Content="{materialDesign:PackIcon Kind=FolderOpen }"
-                    ToolTip="{StaticResource RulesDirChoiceLabel}" />
+                    ToolTip="{DynamicResource RulesDirChoiceLabel}" />
 
                 <!-- this is a dropdown list for selecting the ruleset for csv conversion -->
                 <ComboBox
                     ItemsSource="{Binding RuleSets}"
                     SelectedItem="{Binding SelectedRuleSet}"
-                    ToolTip="{StaticResource RuleSetDropDownToolTip}"
+                    ToolTip="{DynamicResource RuleSetDropDownToolTip}"
                     IsEnabled="{Binding IsIdle}"
                     >
                     <ComboBox.ItemTemplate>
@@ -103,8 +115,8 @@
         <!-- add nice looking card to display currently selected directoy of rules files -->
         <materialDesign:Card DockPanel.Dock="Top" Margin="10,10,10,10" Background="Aqua">
             <WrapPanel Orientation="Vertical">
-                <TextBlock Text="{StaticResource CurrentRulesDirLabel}" Margin="10,10,0,0" />
-                <TextBlock Text="{Binding RulesDir}" Margin="10,10,10,10" />
+                <TextBlock Text="{DynamicResource CurrentRulesDirLabel}" Margin="10,10,0,0" />
+                <TextBlock Text="{Binding Settings.LastRuleFolderPath}" Margin="10,10,10,10" />
             </WrapPanel>
         </materialDesign:Card>
         <materialDesign:Card DockPanel.Dock="Top" Margin="10,10,10,10">
