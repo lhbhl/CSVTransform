@@ -351,6 +351,8 @@ namespace CSVTransformWPF.CsvConverter
             }
 
             // check if formula still contains indices ( i.e. csv line is too short )
+
+            // !!! This will fire if the original .csv contains square brackets !!! needs to change
             if (Regex.IsMatch(formula, WildCardToRegular("*[?]*")))
             {
                 throw new FileFormatException("Source CSV does not match format specified in conversion spec");
