@@ -18,21 +18,28 @@ namespace CSVTransformWPF
             var mainWindow = new MainWindow();
             var settingsManager = new SettingsManager<UserSettings>("UserSettings.xml");
             var userSettings = settingsManager.Settings;
-            userSettings.PropertyChanged += onLanguageChanged;
+            
             SetStringDictionaryLocalized(userSettings.Language);
             var vm = new MainWindowViewModel(userSettings, Current);
+            vm.PropertyChanged += OnLanguageChanged;
             mainWindow.Closing += vm.WindowClosing;
             mainWindow.DataContext = vm;
             mainWindow.Show();
         }
 
-        private void onLanguageChanged(object sender, PropertyChangedEventArgs e)
+        private void OnLanguageChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Language")
+            if (e.PropertyName == "SelectedLanguage")
             {
-                var settingsManager = new SettingsManager<UserSettings>("UserSettings.xml");
-                var userSettings = settingsManager.Settings;
-                SetStringDictionaryLocalized(userSettings.Language);
+                if (sender is MainWindowViewModel vm)
+                {
+                    SetStringDictionaryLocalized(vm.SelectedLanguage);
+
+                    // stupid way to refresh available language list
+                    string[] _availableLanguages = new string[vm.AvailableLanguages.Length]; 
+                    vm.AvailableLanguages.CopyTo(_availableLanguages, 0);
+                    vm.AvailableLanguages = _availableLanguages;
+                }
             }
         }
 
@@ -50,7 +57,7 @@ namespace CSVTransformWPF
                 {
                     "de-DE" => new Uri("Resources/Resources_de.xaml", UriKind.Relative),
                     "en-US" => new Uri("Resources/Resources_en.xaml", UriKind.Relative),
-                    _ => new Uri("Resources/Resources_de.xaml.xaml", UriKind.Relative),
+                    _ => new Uri("Resources/Resources_de.xaml", UriKind.Relative),
                 }
             };
             Resources.MergedDictionaries.Add(dict);

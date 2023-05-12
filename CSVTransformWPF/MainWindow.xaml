@@ -58,7 +58,7 @@
                 <MenuItem Header="{DynamicResource LanguageLabel}" Icon="{materialDesign:PackIcon Kind=ContentPaste}" >
                     <ComboBox
                         ItemsSource="{Binding AvailableLanguages, Converter={StaticResource LanguageConverter}}"
-                        SelectedItem="{Binding Settings.Language, Converter={StaticResource LanguageConverter}}"
+                        SelectedItem="{Binding SelectedLanguage, Converter={StaticResource LanguageConverter}}"
                         IsEnabled="{Binding IsIdle}"
                         >
                     </ComboBox>

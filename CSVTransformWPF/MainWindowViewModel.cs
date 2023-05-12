@@ -15,7 +15,19 @@ namespace CSVTransformWPF
         private IList<InputFile>? _inputFiles;
         private IList<RuleSet>? _ruleSets;
         private Application _currentApplication;
-        public string[] AvailableLanguages { get; } = { "de-DE", "en-US" };
+        public string[] AvailableLanguages
+        {
+            get
+            {
+                return _availableLanguages;
+            }
+            set
+            {
+                _availableLanguages = value;
+                OnPropertyChanged(nameof(AvailableLanguages));
+            }
+        }
+        private string[] _availableLanguages = { "de-DE", "en-US" };
         
 
         public MainWindowViewModel(UserSettings settings, Application currentApplication)
@@ -26,6 +38,7 @@ namespace CSVTransformWPF
             _settings = settings;
             _settings.PropertyChanged += OnSettingsPropertyChanged;
             _currentApplication = currentApplication;
+            SelectedLanguage = _settings.Language;
             // 
             UpdateRuleSets();
         }
@@ -374,6 +387,21 @@ namespace CSVTransformWPF
             }
         }
 
+        public string SelectedLanguage
+        {
+            get { return _selectedLanguage; }
+            set
+            {
+                if (value != null && value != _selectedLanguage)
+                {
+                    _selectedLanguage = value;
+                    OnPropertyChanged(nameof(SelectedLanguage));
+                    Settings.Language = value;
+                }
+            }
+        }
+        private string _selectedLanguage;
+
         public event PropertyChangedEventHandler? PropertyChanged;
         private void OnPropertyChanged(string propertyName)
         {
@@ -396,6 +424,8 @@ namespace CSVTransformWPF
                 SelectedRuleSet = RuleSets[0];
             }
 
+            
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
@@ -408,6 +438,11 @@ namespace CSVTransformWPF
             {
                 UpdateRuleSets();
             }
+            /*if (e.PropertyName == nameof(Settings.Language))
+            {
+                // notify Available language changed
+                OnPropertyChanged(nameof(AvailableLanguages));
+            }*/
         }
     }
 
